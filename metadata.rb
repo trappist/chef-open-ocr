@@ -8,4 +8,5 @@ version          '0.1.2'
 
 depends          'build-essential'
 depends          'golang'
+depends          'rabbitmq'
 depends          'tesseract'

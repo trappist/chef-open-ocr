@@ -17,11 +17,10 @@
 # limitations under the License.
 #
 
-%w[rabbitmq-server golang git].each do |pkg|
-  package pkg do
-    action :install
-  end
-end
+package 'rabbitmq-server'
+package 'golang'
+package 'git'
+package 'tesseract-ocr'
 
 gopath = '/opt/go'
 

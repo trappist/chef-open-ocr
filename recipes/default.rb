@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-%w[rabbitmq golang git].each do |pkg|
+%w[rabbitmq-server golang git].each do |pkg|
   package pkg do
     action :install
   end

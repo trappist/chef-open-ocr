@@ -17,20 +17,25 @@
 # limitations under the License.
 #
 
-ENV['GOPATH'] = '/opt/go'
+package 'golang' do
+  action :install
+end
 
-directory ENV['GOPATH'] do
+gopath = '/opt/go'
+ENV['GOPATH'] = gopath
+
+directory gopath do
   action :create
 end
 
 bash "build_open_ocr" do
-  cwd ENV['GOPATH']
+  cwd gopath
   code <<-EOH
     go get -u -v -t github.com/tleyden/open-ocr
-    cd $GOPATH/src/github.com/tleyden/open-ocr/cli-httpd
+    cd #{gopath}/src/github.com/tleyden/open-ocr/cli-httpd
     go build -v -o open-ocr-httpd
     cp open-ocr-httpd /usr/bin
-    cd $GOPATH/src/github.com/tleyden/open-ocr/cli-worker
+    cd #{gopath}/src/github.com/tleyden/open-ocr/cli-worker
     go build -v -o open-ocr-worker
     cp open-ocr-worker /usr/bin
   EOH

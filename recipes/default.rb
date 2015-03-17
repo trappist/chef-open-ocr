@@ -17,8 +17,10 @@
 # limitations under the License.
 #
 
-package 'golang' do
-  action :install
+%w[golang git].each do |pkg|
+  package pkg do
+    action :install
+  end
 end
 
 gopath = '/opt/go'

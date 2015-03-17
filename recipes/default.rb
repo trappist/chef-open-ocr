@@ -30,9 +30,10 @@ directory gopath do
   action :create
 end
 
-bash "build_open_ocr" do
+execute "build_open_ocr" do
   cwd gopath
-  code <<-EOH
+  creates "#{gopath}/src/github.com/tleyden/open-ocr/cli-httpd"
+  command <<-EOH
     go get -u -v -t github.com/tleyden/open-ocr
     cd #{gopath}/src/github.com/tleyden/open-ocr/cli-httpd
     go build -v -o open-ocr-httpd
@@ -43,11 +44,23 @@ bash "build_open_ocr" do
   EOH
 end
 
-bash "start_open_ocr" do
-  code <<-EOH
-    export HTTP_PORT=8080
-    export AMQP_URI="amqp://guest:guest@localhost/"
-    nohup open-ocr-worker -amqp_uri "${AMQP_URI}" &
-    nohup open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT} &
-  EOH
+execute "start_open_ocr_httpd" do
+  user 'vagrant'
+  environment {
+    "HTTP_PORT" => "8080",
+    "AMQP_URI"  => "amqp://guest:guest@localhost/"
+  }
+  command 'nohup open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT} &'
+  not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-httpd").readlines.any? }
+end
+
+execute "start_open_ocr_worker" do
+  user 'vagrant'
+  retries 3 # rabbitmq may still be starting
+  retry_delay 5
+  environment {
+    "AMQP_URI"  => "amqp://guest:guest@localhost/"
+  }
+  command 'nohup open-ocr-worker -amqp_uri "${AMQP_URI}" &'
+  not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-worker").readlines.any? }
 end

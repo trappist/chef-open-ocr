@@ -1,0 +1,14 @@
+# open-ocr-httpd - open-ocr-httpd job file
+ 
+description "API webservice for open-ocr"
+author "Rocco Stanzione <trappist@gmail.com>"
+ 
+start on startup
+ 
+# Automatically restart process if crashed
+respawn
+ 
+setuid vagrant
+
+# Start the process
+exec open-ocr-httpd -http_port 8080 -amqp_uri "amqp://guest:guest@localhost/"

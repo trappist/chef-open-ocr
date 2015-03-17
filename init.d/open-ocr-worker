@@ -1,0 +1,14 @@
+# open-ocr-worker - open-ocr-worker job file
+ 
+description "Worker daemon for open-ocr"
+author "Rocco Stanzione <trappist@gmail.com>"
+ 
+start on startup
+ 
+# Automatically restart process if crashed
+respawn
+
+setuid vagrant
+ 
+# Start the process
+exec open-ocr-worker -amqp_uri "amqp://guest:guest@localhost/"

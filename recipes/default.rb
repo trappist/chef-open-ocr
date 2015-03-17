@@ -45,18 +45,14 @@ execute "build_open_ocr" do
   EOH
 end
 
-execute "start_open_ocr_httpd" do
-  user 'vagrant'
-  environment "HTTP_PORT" => "8080", "AMQP_URI" => amqp_uri
-  command 'nohup open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT} &'
-  not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-httpd").readlines.any? }
-end
+%w[worker httpd].each do |process|
 
-execute "start_open_ocr_worker" do
-  user 'vagrant'
-  retries 3 # rabbitmq may still be starting
-  retry_delay 5
-  environment "AMQP_URI" => amqp_uri
-  command 'nohup open-ocr-worker -amqp_uri "${AMQP_URI}" &'
-  not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-worker").readlines.any? }
+  template "/etc/init.d/open-ocr-#{process}" do
+    source "init.d/open-ocr-#{process}"
+  end
+
+  execute "start_open_ocr_#{process}" do
+    command "start open-ocr-#{process}"
+  end
+
 end

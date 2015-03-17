@@ -25,6 +25,8 @@ end
 
 gopath = '/opt/go'
 
+ENV['GOPATH'] = gopath
+
 directory gopath do
   action :create
 end

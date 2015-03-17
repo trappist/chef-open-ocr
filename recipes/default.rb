@@ -23,6 +23,7 @@ package 'git'
 package 'tesseract-ocr'
 
 gopath = '/opt/go'
+amqp_uri = "amqp://guest:guest@localhost/"
 
 ENV['GOPATH'] = gopath
 
@@ -46,10 +47,7 @@ end
 
 execute "start_open_ocr_httpd" do
   user 'vagrant'
-  environment {
-    "HTTP_PORT" => "8080",
-    "AMQP_URI"  => "amqp://guest:guest@localhost/"
-  }
+  environment "HTTP_PORT" => "8080", "AMQP_URI" => amqp_uri
   command 'nohup open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT} &'
   not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-httpd").readlines.any? }
 end
@@ -58,9 +56,7 @@ execute "start_open_ocr_worker" do
   user 'vagrant'
   retries 3 # rabbitmq may still be starting
   retry_delay 5
-  environment {
-    "AMQP_URI"  => "amqp://guest:guest@localhost/"
-  }
+  environment "AMQP_URI" => amqp_uri
   command 'nohup open-ocr-worker -amqp_uri "${AMQP_URI}" &'
   not_if { IO.popen("ps aux | grep -v grep | grep open-ocr-worker").readlines.any? }
 end

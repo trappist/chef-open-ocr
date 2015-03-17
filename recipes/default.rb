@@ -47,9 +47,9 @@ end
 
 %w[worker httpd].each do |process|
 
-  template "/etc/init.d/open-ocr-#{process}" do
-    mode "0755"
-    source "init.d/open-ocr-#{process}"
+  template "/etc/init/open-ocr-#{process}.conf" do
+    mode "0644"
+    source "init/open-ocr-#{process}.conf"
   end
 
   execute "start_open_ocr_#{process}" do

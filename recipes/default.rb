@@ -46,7 +46,7 @@ bash "start_open_ocr" do
   code <<-EOH
     export HTTP_PORT=8080
     export AMQP_URI="amqp://guest:guest@localhost/"
-    open-ocr-worker -amqp_uri "${AMQP_URI}"
-    open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT}
+    nohup open-ocr-worker -amqp_uri "${AMQP_URI}" &
+    nohup open-ocr-httpd -amqp_uri "${AMQP_URI}" -http_port ${HTTP_PORT} &
   EOH
 end
